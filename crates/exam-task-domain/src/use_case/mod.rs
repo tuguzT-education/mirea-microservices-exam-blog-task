@@ -1,3 +1,5 @@
-pub use task::{CreateTaskUseCase, DeleteTaskUseCase, ReadTaskUseCase, UpdateTaskUseCase};
+pub use task::{
+    CreateTaskUseCase, DeleteTaskUseCase, FilterTaskUseCase, ReadTaskUseCase, UpdateTaskUseCase,
+};
 
 mod task;

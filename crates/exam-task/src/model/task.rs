@@ -1,5 +1,5 @@
 use chrono::{DateTime, Utc};
-use exam_task_domain::model::{CreateTask, Task, UpdateTask};
+use exam_task_domain::model::{CreateTask, FilterTask, Task, UpdateTask};
 use serde::{Deserialize, Serialize};
 
 use super::utils::deserialize_optional_field;
@@ -54,6 +54,47 @@ impl From<CreateTask> for CreateTaskData {
 impl From<CreateTaskData> for CreateTask {
     fn from(create: CreateTaskData) -> Self {
         Self { name: create.name }
+    }
+}
+
+#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct FilterTaskData {
+    pub id: Option<String>,
+    #[serde(deserialize_with = "deserialize_optional_field")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub post_id: Option<Option<String>>,
+    pub name: Option<String>,
+    pub description: Option<String>,
+    pub is_closed: Option<bool>,
+    #[serde(deserialize_with = "deserialize_optional_field")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub date_to_publish: Option<Option<DateTime<Utc>>>,
+}
+
+impl From<FilterTaskData> for FilterTask {
+    fn from(filter: FilterTaskData) -> Self {
+        Self {
+            id: filter.id.map(Into::into),
+            post_id: filter.post_id.map(|it| it.map(Into::into)),
+            name: filter.name,
+            description: filter.description,
+            is_closed: filter.is_closed,
+            date_to_publish: filter.date_to_publish,
+        }
+    }
+}
+
+impl From<FilterTask> for FilterTaskData {
+    fn from(filter: FilterTask) -> Self {
+        Self {
+            id: filter.id.map(Into::into),
+            post_id: filter.post_id.map(|it| it.map(Into::into)),
+            name: filter.name,
+            description: filter.description,
+            is_closed: filter.is_closed,
+            date_to_publish: filter.date_to_publish,
+        }
     }
 }
 

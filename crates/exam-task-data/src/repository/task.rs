@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use exam_task_domain::{
-    model::{Task, TaskId},
+    model::{FilterTask, Task, TaskId},
     repository::TaskResult,
 };
 
@@ -28,6 +28,10 @@ impl domain::TaskRepository for TaskRepository {
 
     async fn read(&self, id: TaskId) -> TaskResult<Task> {
         self.data_source.read(id).await
+    }
+
+    async fn filter(&self, filter: FilterTask) -> TaskResult<Vec<Task>> {
+        self.data_source.filter(filter).await
     }
 
     async fn update(&self, task: Task) -> TaskResult<Task> {

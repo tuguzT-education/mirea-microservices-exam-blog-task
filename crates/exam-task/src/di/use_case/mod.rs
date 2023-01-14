@@ -1,6 +1,6 @@
 pub use task::{
-    CreateTaskUseCaseComponent, DeleteTaskUseCaseComponent, ReadTaskUseCaseComponent,
-    UpdateTaskUseCaseComponent,
+    CreateTaskUseCaseComponent, DeleteTaskUseCaseComponent, FilterTaskUseCaseComponent,
+    ReadTaskUseCaseComponent, UpdateTaskUseCaseComponent,
 };
 
 mod task;

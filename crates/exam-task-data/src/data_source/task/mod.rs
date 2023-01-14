@@ -1,9 +1,10 @@
 use exam_task_domain::{
-    model::{InternalError, Task, TaskId},
+    model::{FilterTask, InternalError, Task, TaskId},
     repository::{TaskError, TaskResult},
 };
+use futures::StreamExt;
 use mongodb::{
-    bson::{doc, oid::ObjectId},
+    bson::{doc, oid::ObjectId, Document, Regex},
     options::{FindOneAndReplaceOptions, ReturnDocument},
     Collection,
 };
@@ -46,6 +47,51 @@ impl TaskDataSource {
             .ok_or(TaskError::NoTaskFound)?;
         let task = Task::from(data);
         Ok(task)
+    }
+
+    pub async fn filter(&self, filter_task: FilterTask) -> TaskResult<Vec<Task>> {
+        let mut filter = Document::new();
+        if let Some(id) = filter_task.id {
+            let id = ObjectId::parse_str(id.to_string()).map_err(InternalError::new)?;
+            filter.insert("_id", id);
+        }
+        if let Some(post_id) = filter_task.post_id {
+            let post_id = post_id.map(String::from);
+            filter.insert("post_id", post_id);
+        }
+        if let Some(name) = filter_task.name {
+            let regex = Regex {
+                pattern: name,
+                options: "i".to_string(),
+            };
+            filter.insert("name", regex);
+        }
+        if let Some(description) = filter_task.description {
+            let regex = Regex {
+                pattern: description,
+                options: "i".to_string(),
+            };
+            filter.insert("description", regex);
+        }
+        if let Some(is_closed) = filter_task.is_closed {
+            filter.insert("is_closed", is_closed);
+        }
+        if let Some(date_to_publish) = filter_task.date_to_publish {
+            filter.insert("date_to_publish", date_to_publish);
+        }
+        let cursor = self
+            .collection
+            .find(filter, None)
+            .await
+            .map_err(InternalError::new)?;
+        let data = cursor
+            .collect::<Vec<_>>()
+            .await
+            .into_iter()
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(InternalError::new)?;
+        let tasks = data.into_iter().map(Into::into).collect();
+        Ok(tasks)
     }
 
     pub async fn update(&self, task: Task) -> TaskResult<Task> {

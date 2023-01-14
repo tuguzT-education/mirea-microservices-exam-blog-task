@@ -1,4 +1,4 @@
-pub use task::{CreateTaskData, TaskData, UpdateTaskData};
+pub use task::{CreateTaskData, FilterTaskData, TaskData, UpdateTaskData};
 
 mod task;
 mod utils;

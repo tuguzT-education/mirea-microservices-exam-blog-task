@@ -22,6 +22,17 @@ pub struct CreateTask {
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Default, TypedBuilder)]
 #[builder(field_defaults(default, setter(into, strip_option)))]
+pub struct FilterTask {
+    pub id: Option<TaskId>,
+    pub post_id: Option<Option<ErasedId>>,
+    pub name: Option<String>,
+    pub description: Option<String>,
+    pub is_closed: Option<bool>,
+    pub date_to_publish: Option<Option<DateTime<Utc>>>,
+}
+
+#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Default, TypedBuilder)]
+#[builder(field_defaults(default, setter(into, strip_option)))]
 pub struct UpdateTask {
     pub post_id: Option<Option<ErasedId>>,
     pub name: Option<String>,

@@ -1,20 +1,24 @@
 use axum::{
-    extract::Path,
+    extract::{Path, Query},
     routing::{delete, get, post},
     Json, Router,
 };
 use shaku_axum::Inject;
 
 use crate::{
-    di::{AppModule, CreateTaskUseCase, DeleteTaskUseCase, ReadTaskUseCase, UpdateTaskUseCase},
-    model::{CreateTaskData, TaskData, UpdateTaskData},
+    di::{
+        AppModule, CreateTaskUseCase, DeleteTaskUseCase, FilterTaskUseCase, ReadTaskUseCase,
+        UpdateTaskUseCase,
+    },
+    model::{CreateTaskData, FilterTaskData, TaskData, UpdateTaskData},
     route::error::AppError,
 };
 
 pub fn all() -> Router {
     Router::new()
         .merge(create_task())
-        .merge(read_tasks())
+        .merge(read_task())
+        .merge(filter_task())
         .merge(update_task())
         .merge(delete_task())
 }
@@ -32,7 +36,7 @@ pub fn create_task() -> Router {
     Router::new().route("/", post(handler))
 }
 
-pub fn read_tasks() -> Router {
+pub fn read_task() -> Router {
     async fn handler(
         use_case: Inject<AppModule, ReadTaskUseCase>,
         Path(id): Path<String>,
@@ -43,6 +47,20 @@ pub fn read_tasks() -> Router {
     }
 
     Router::new().route("/:id", get(handler))
+}
+
+pub fn filter_task() -> Router {
+    async fn handler(
+        use_case: Inject<AppModule, FilterTaskUseCase>,
+        Query(filter): Query<FilterTaskData>,
+    ) -> Result<Json<Vec<TaskData>>, AppError> {
+        let filter = filter.into();
+        let tasks = use_case.filter_task(filter).await?;
+        let tasks = tasks.into_iter().map(Into::into).collect();
+        Ok(Json(tasks))
+    }
+
+    Router::new().route("/", get(handler))
 }
 
 pub fn update_task() -> Router {

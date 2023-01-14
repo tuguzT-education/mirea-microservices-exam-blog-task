@@ -24,6 +24,7 @@ module! {
             use_case::DeleteTaskUseCaseComponent,
             use_case::ReadTaskUseCaseComponent,
             use_case::UpdateTaskUseCaseComponent,
+            use_case::FilterTaskUseCaseComponent,
         ],
         providers = [],
     }
@@ -41,12 +42,14 @@ pub type CreateTaskUseCase =
 
 pub type ReadTaskUseCase = domain::ReadTaskUseCase<Arc<dyn TaskRepository>>;
 
+pub type FilterTaskUseCase = domain::FilterTaskUseCase<Arc<dyn TaskRepository>>;
+
 pub type UpdateTaskUseCase = domain::UpdateTaskUseCase<Arc<dyn TaskRepository>>;
 
 pub type DeleteTaskUseCase = domain::DeleteTaskUseCase<Arc<dyn TaskRepository>>;
 
 mod domain {
     pub use exam_task_domain::use_case::{
-        CreateTaskUseCase, DeleteTaskUseCase, ReadTaskUseCase, UpdateTaskUseCase,
+        CreateTaskUseCase, DeleteTaskUseCase, FilterTaskUseCase, ReadTaskUseCase, UpdateTaskUseCase,
     };
 }

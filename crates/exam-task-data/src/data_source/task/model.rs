@@ -1,6 +1,8 @@
-use chrono::{DateTime, Utc};
 use exam_task_domain::model::Task;
-use mongodb::bson::oid::{Error, ObjectId};
+use mongodb::bson::{
+    oid::{Error, ObjectId},
+    DateTime,
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
@@ -11,7 +13,7 @@ pub struct TaskData {
     pub name: String,
     pub description: String,
     pub is_closed: bool,
-    pub date_to_publish: Option<DateTime<Utc>>,
+    pub date_to_publish: Option<DateTime>,
 }
 
 impl From<TaskData> for Task {
@@ -22,7 +24,7 @@ impl From<TaskData> for Task {
             name: task.name,
             description: task.description,
             is_closed: task.is_closed,
-            date_to_publish: task.date_to_publish,
+            date_to_publish: task.date_to_publish.map(DateTime::to_chrono),
         }
     }
 }
@@ -40,7 +42,7 @@ impl TryFrom<Task> for TaskData {
             name: task.name,
             description: task.description,
             is_closed: task.is_closed,
-            date_to_publish: task.date_to_publish,
+            date_to_publish: task.date_to_publish.map(DateTime::from_chrono),
         })
     }
 }

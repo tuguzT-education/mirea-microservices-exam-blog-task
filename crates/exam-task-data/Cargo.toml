@@ -10,8 +10,9 @@ publish.workspace = true
 [dependencies]
 exam-task-domain = { path = "../exam-task-domain" }
 tokio = { version = "1.24.1", features = ["sync"] }
+futures = "0.3.25"
 serde = { version = "1.0.152", features = ["derive"] }
-mongodb = "2.3.1"
+mongodb = { version = "2.3.1", features = ["bson-chrono-0_4"] }
 async-trait = "0.1.61"
 derive_more = "0.99.17"
 auto_impl = "1.0.1"
