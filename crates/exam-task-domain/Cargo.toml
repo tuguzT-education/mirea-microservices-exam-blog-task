@@ -6,3 +6,10 @@ repository.workspace = true
 license.workspace = true
 edition.workspace = true
 publish.workspace = true
+
+[dependencies]
+async-trait = "0.1.61"
+derive_more = "0.99.17"
+typed-builder = "0.11.0"
+auto_impl = "1.0.1"
+chrono = "0.4.23"
