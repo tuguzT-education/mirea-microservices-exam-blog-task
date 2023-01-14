@@ -1,0 +1,9 @@
+[workspace]
+members = ["crates/*"]
+
+[workspace.package]
+authors = ["tuguzT <timurka.tugushev@gmail.com>"]
+repository = "https://github.com/tuguzT-education/mirea-microservices-exam-blog-task"
+license = "MIT OR Apache-2.0"
+edition = "2021"
+publish = false
