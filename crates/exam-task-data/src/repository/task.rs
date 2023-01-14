@@ -1,23 +1,27 @@
 use async_trait::async_trait;
 use exam_task_domain::{
     model::{Task, TaskId},
-    repository::{TaskRepository, TaskResult},
+    repository::TaskResult,
 };
 
 use crate::data_source::TaskDataSource;
 
-pub struct TaskRepositoryImpl {
+mod domain {
+    pub use exam_task_domain::repository::TaskRepository;
+}
+
+pub struct TaskRepository {
     data_source: TaskDataSource,
 }
 
-impl TaskRepositoryImpl {
+impl TaskRepository {
     pub fn new(data_source: TaskDataSource) -> Self {
         Self { data_source }
     }
 }
 
 #[async_trait]
-impl TaskRepository for TaskRepositoryImpl {
+impl domain::TaskRepository for TaskRepository {
     async fn create(&self, task: Task) -> TaskResult<Task> {
         self.data_source.create(task).await
     }

@@ -5,7 +5,7 @@ use crate::model::{ErasedId, InternalError};
 
 #[async_trait]
 #[auto_impl(&, Box, Arc)]
-pub trait IdRepository {
+pub trait IdRepository: Send + Sync {
     async fn create(&self) -> Result<ErasedId>;
 }
 

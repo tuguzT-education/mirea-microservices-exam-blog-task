@@ -14,6 +14,7 @@ use super::Client;
 
 mod model;
 
+#[derive(Debug, Clone)]
 pub struct TaskDataSource {
     collection: Collection<TaskData>,
 }
