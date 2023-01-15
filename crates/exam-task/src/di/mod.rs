@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
-use anyhow::Result;
-use shaku::module;
+use shaku::{module, ModuleBuilder};
 
 use self::{
     data_source::DatabaseUrl,
@@ -30,11 +29,8 @@ module! {
     }
 }
 
-pub fn app_module(database_url: String) -> Result<AppModule> {
-    let module = AppModule::builder()
-        .with_component_parameters::<DatabaseUrl>(database_url)
-        .build();
-    Ok(module)
+pub fn app_module(database_url: String) -> ModuleBuilder<AppModule> {
+    AppModule::builder().with_component_parameters::<DatabaseUrl>(database_url)
 }
 
 pub type CreateTaskUseCase =

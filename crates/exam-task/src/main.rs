@@ -26,7 +26,7 @@ pub async fn main() -> Result<()> {
         .with_context(|| "failed to init tracing")?;
 
     let database_url = std::env::var("DATABASE_URL").with_context(|| "DATABASE_URL must be set")?;
-    let module = app_module(database_url)?;
+    let module = app_module(database_url).build();
     let module = Arc::new(module);
 
     let app = Router::new()

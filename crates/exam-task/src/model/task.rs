@@ -1,6 +1,7 @@
 use chrono::{DateTime, Utc};
 use exam_task_domain::model::{CreateTask, FilterTask, Task, UpdateTask};
 use serde::{Deserialize, Serialize};
+use typed_builder::TypedBuilder;
 
 use super::utils::deserialize_optional_field;
 
@@ -57,7 +58,20 @@ impl From<CreateTaskData> for CreateTask {
     }
 }
 
-#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Default, Serialize, Deserialize)]
+#[derive(
+    Debug,
+    Clone,
+    Hash,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Default,
+    Serialize,
+    Deserialize,
+    TypedBuilder,
+)]
+#[builder(field_defaults(default, setter(into, strip_option)))]
 #[serde(default)]
 pub struct FilterTaskData {
     pub id: Option<String>,
@@ -98,7 +112,20 @@ impl From<FilterTask> for FilterTaskData {
     }
 }
 
-#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Default, Serialize, Deserialize)]
+#[derive(
+    Debug,
+    Clone,
+    Hash,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Default,
+    Serialize,
+    Deserialize,
+    TypedBuilder,
+)]
+#[builder(field_defaults(default, setter(into, strip_option)))]
 #[serde(default)]
 pub struct UpdateTaskData {
     #[serde(deserialize_with = "deserialize_optional_field")]
