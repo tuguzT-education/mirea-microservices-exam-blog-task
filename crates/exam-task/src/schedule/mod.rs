@@ -14,14 +14,16 @@ use crate::{di::UpdateTaskUseCase, model::CreatePost};
 #[derive(Clone)]
 pub struct Scheduler {
     handles: Arc<RwLock<HashMap<TaskId, JoinHandle<()>>>>,
+    post_service_url: String,
     client: Client,
     update: UpdateTaskUseCase,
 }
 
 impl Scheduler {
-    pub fn new(client: Client, update: UpdateTaskUseCase) -> Self {
+    pub fn new(client: Client, update: UpdateTaskUseCase, post_service_url: String) -> Self {
         Self {
             handles: Default::default(),
+            post_service_url,
             client,
             update,
         }
@@ -32,6 +34,7 @@ impl Scheduler {
             Some(date_to_publish) => {
                 let id = task.id.clone();
                 let handles = self.handles.clone();
+                let post_service_url = self.post_service_url.clone();
                 let client = self.client.clone();
                 let update_use_case = self.update.clone();
 
@@ -45,7 +48,7 @@ impl Scheduler {
                         description: task.description,
                     };
                     let _response = client
-                        .post("http://krakend:8080/api/post")
+                        .post(post_service_url)
                         .json(&create)
                         .send()
                         .await

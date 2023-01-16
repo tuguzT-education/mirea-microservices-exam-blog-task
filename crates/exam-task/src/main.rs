@@ -27,8 +27,10 @@ pub async fn main() -> Result<()> {
         .try_init()
         .with_context(|| "failed to init tracing")?;
 
-    let database_url = std::env::var("DATABASE_URL").with_context(|| "DATABASE_URL must be set")?;
-    let module = app_module(database_url).build();
+    let database_uri = std::env::var("DATABASE_URI").with_context(|| "DATABASE_URI must be set")?;
+    let post_service_url =
+        std::env::var("POST_SERVICE_URL").with_context(|| "POST_SERVICE_URL must be set")?;
+    let module = app_module(database_uri, post_service_url).build();
     let module = Arc::new(module);
 
     publish_all_tasks(module.resolve_ref(), module.resolve_ref()).await?;

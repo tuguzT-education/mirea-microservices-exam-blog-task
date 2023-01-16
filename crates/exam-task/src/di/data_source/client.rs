@@ -8,7 +8,7 @@ pub struct ClientComponent(());
 
 impl<M> Component<M> for ClientComponent
 where
-    M: Module + HasComponent<DatabaseUrl>,
+    M: Module + HasComponent<DatabaseUri>,
 {
     type Interface = Client;
 
@@ -30,20 +30,21 @@ where
     }
 }
 
-pub struct DatabaseUrl(pub String);
+pub struct DatabaseUri(pub String);
 
-impl<M> Component<M> for DatabaseUrl
+impl<M> Component<M> for DatabaseUri
 where
     M: Module,
 {
     type Interface = Self;
 
-    type Parameters = String;
+    type Parameters = Option<String>;
 
     fn build(
         _: &mut shaku::ModuleBuildContext<M>,
         params: Self::Parameters,
     ) -> Box<Self::Interface> {
-        Box::new(Self(params))
+        let database_uri = params.expect("Database URI should be set");
+        Box::new(Self(database_uri))
     }
 }

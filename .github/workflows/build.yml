@@ -107,3 +107,4 @@ jobs:
         run: cargo test
         env:
           DATABASE_URL: mongodb://mongo:password@localhost:27017/?authSource=admin
+          POST_SERVICE_URL: http://localhost:8081

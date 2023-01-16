@@ -1,4 +1,4 @@
-pub use client::{ClientComponent, DatabaseUrl};
+pub use client::{ClientComponent, DatabaseUri};
 pub use task::TaskDataSourceComponent;
 
 mod client;

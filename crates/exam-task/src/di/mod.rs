@@ -3,8 +3,9 @@ use std::sync::Arc;
 use shaku::{module, ModuleBuilder};
 
 use self::{
-    data_source::DatabaseUrl,
+    data_source::DatabaseUri,
     repository::{IdRepository, TaskRepository},
+    schedule::PostServiceUrl,
 };
 
 mod data_source;
@@ -15,7 +16,7 @@ mod use_case;
 module! {
     pub AppModule {
         components = [
-            data_source::DatabaseUrl,
+            data_source::DatabaseUri,
             data_source::ClientComponent,
             data_source::TaskDataSourceComponent,
             repository::TaskRepositoryComponent,
@@ -27,13 +28,16 @@ module! {
             use_case::FilterTaskUseCaseComponent,
             schedule::ClientComponent,
             schedule::SchedulerComponent,
+            schedule::PostServiceUrl,
         ],
         providers = [],
     }
 }
 
-pub fn app_module(database_url: String) -> ModuleBuilder<AppModule> {
-    AppModule::builder().with_component_parameters::<DatabaseUrl>(database_url)
+pub fn app_module(database_uri: String, post_service_url: String) -> ModuleBuilder<AppModule> {
+    AppModule::builder()
+        .with_component_parameters::<DatabaseUri>(Some(database_uri))
+        .with_component_parameters::<PostServiceUrl>(Some(post_service_url))
 }
 
 pub type CreateTaskUseCase =
