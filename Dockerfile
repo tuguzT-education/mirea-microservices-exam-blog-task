@@ -2,7 +2,7 @@ FROM rust:slim as builder
 USER root
 WORKDIR /usr/src/exam-task
 RUN rustup target add x86_64-unknown-linux-musl
-RUN apt-get update && apt-get install -y musl-tools
+RUN apt-get update && apt-get install -y musl-tools && apk add pkgconfig openssl-dev
 COPY Cargo.toml Cargo.lock ./
 COPY crates ./crates
 RUN cargo build --target x86_64-unknown-linux-musl --release
