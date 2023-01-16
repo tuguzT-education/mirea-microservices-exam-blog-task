@@ -4,3 +4,4 @@
 pub mod di;
 pub mod model;
 pub mod route;
+pub mod schedule;

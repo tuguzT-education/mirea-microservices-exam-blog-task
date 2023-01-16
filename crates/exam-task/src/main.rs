@@ -7,9 +7,11 @@ use anyhow::{Context, Result};
 use axum::{Extension, Router, Server};
 use dotenv::dotenv;
 use exam_task::{
-    di::app_module,
+    di::{app_module, FilterTaskUseCase},
     route::{health, task},
+    schedule::Scheduler,
 };
+use shaku::HasComponent;
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -29,6 +31,8 @@ pub async fn main() -> Result<()> {
     let module = app_module(database_url).build();
     let module = Arc::new(module);
 
+    publish_all_tasks(module.resolve_ref(), module.resolve_ref()).await?;
+
     let app = Router::new()
         .merge(task::all())
         .layer(Extension(module))
@@ -47,4 +51,12 @@ async fn shutdown_signal() {
     tokio::signal::ctrl_c()
         .await
         .expect("expect tokio signal ctrl-c")
+}
+
+async fn publish_all_tasks(scheduler: &Scheduler, tasks: &FilterTaskUseCase) -> Result<()> {
+    let tasks = tasks.filter_task(Default::default()).await?;
+    for task in tasks {
+        scheduler.publish_task(task).await;
+    }
+    Ok(())
 }

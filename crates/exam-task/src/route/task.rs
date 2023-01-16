@@ -12,6 +12,7 @@ use crate::{
     },
     model::{CreateTaskData, FilterTaskData, TaskData, UpdateTaskData},
     route::error::AppError,
+    schedule::Scheduler,
 };
 
 pub fn all() -> Router {
@@ -66,12 +67,16 @@ pub fn filter_task() -> Router {
 pub fn update_task() -> Router {
     async fn handler(
         use_case: Inject<AppModule, UpdateTaskUseCase>,
+        scheduler: Inject<AppModule, Scheduler>,
         Path(id): Path<String>,
         Json(update): Json<UpdateTaskData>,
     ) -> Result<Json<TaskData>, AppError> {
         let id = id.into();
         let update = update.into();
-        let task = use_case.update_task(id, update).await?.into();
+        let task = use_case.update_task(id, update).await?;
+        scheduler.publish_task(task.clone()).await;
+
+        let task = task.into();
         Ok(Json(task))
     }
 

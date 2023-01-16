@@ -9,6 +9,7 @@ use self::{
 
 mod data_source;
 mod repository;
+mod schedule;
 mod use_case;
 
 module! {
@@ -24,6 +25,8 @@ module! {
             use_case::ReadTaskUseCaseComponent,
             use_case::UpdateTaskUseCaseComponent,
             use_case::FilterTaskUseCaseComponent,
+            schedule::ClientComponent,
+            schedule::SchedulerComponent,
         ],
         providers = [],
     }
