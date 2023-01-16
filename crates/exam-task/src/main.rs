@@ -33,7 +33,7 @@ pub async fn main() -> Result<()> {
     let module = app_module(database_uri, post_service_url).build();
     let module = Arc::new(module);
 
-    publish_all_tasks(module.resolve_ref(), module.resolve_ref()).await?;
+    setup_publish_tasks(module.resolve_ref(), module.resolve_ref()).await?;
 
     let app = Router::new()
         .merge(task::all())
@@ -55,10 +55,10 @@ async fn shutdown_signal() {
         .expect("expect tokio signal ctrl-c")
 }
 
-async fn publish_all_tasks(scheduler: &Scheduler, tasks: &FilterTaskUseCase) -> Result<()> {
+async fn setup_publish_tasks(scheduler: &Scheduler, tasks: &FilterTaskUseCase) -> Result<()> {
     let tasks = tasks.filter_task(Default::default()).await?;
     for task in tasks {
-        scheduler.publish_task(task).await;
+        scheduler.set_publish_task_state(task).await;
     }
     Ok(())
 }

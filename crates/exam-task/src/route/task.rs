@@ -74,7 +74,7 @@ pub fn update_task() -> Router {
         let id = id.into();
         let update = update.into();
         let task = use_case.update_task(id, update).await?;
-        scheduler.publish_task(task.clone()).await;
+        scheduler.set_publish_task_state(task.clone()).await;
 
         let task = task.into();
         Ok(Json(task))
@@ -86,10 +86,14 @@ pub fn update_task() -> Router {
 pub fn delete_task() -> Router {
     async fn handler(
         use_case: Inject<AppModule, DeleteTaskUseCase>,
+        scheduler: Inject<AppModule, Scheduler>,
         Path(id): Path<String>,
     ) -> Result<Json<TaskData>, AppError> {
         let id = id.into();
-        let task = use_case.delete_task(id).await?.into();
+        let task = use_case.delete_task(id).await?;
+        scheduler.set_publish_task_state(task.clone()).await;
+
+        let task = task.into();
         Ok(Json(task))
     }
 

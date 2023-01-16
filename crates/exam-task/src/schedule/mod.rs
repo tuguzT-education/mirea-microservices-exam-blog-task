@@ -29,7 +29,7 @@ impl Scheduler {
         }
     }
 
-    pub async fn publish_task(&self, task: Task) {
+    pub async fn set_publish_task_state(&self, task: Task) {
         match task.date_to_publish {
             Some(date_to_publish) => {
                 let id = task.id.clone();
@@ -64,11 +64,15 @@ impl Scheduler {
                     update_use_case.update_task(task.id, update).await.unwrap();
                 });
                 let mut handles = self.handles.write().await;
-                handles.insert(id, handle);
+                let handle = handles.insert(id, handle);
+                if let Some(handle) = handle {
+                    handle.abort();
+                }
             }
             None => {
                 let mut handles = self.handles.write().await;
-                if let Some(handle) = handles.remove(&task.id) {
+                let handle = handles.remove(&task.id);
+                if let Some(handle) = handle {
                     handle.abort();
                 }
             }

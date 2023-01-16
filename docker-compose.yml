@@ -8,7 +8,8 @@ services:
       - 8080:8080
     environment:
       - RUST_LOG=$RUST_LOG
-      - DATABASE_URL=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/?authSource=admin
+      - DATABASE_URI=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/?authSource=admin
+      - POST_SERVICE_URL=http://postservice:8080/api/post
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
       interval: 10s
@@ -26,3 +27,16 @@ services:
       interval: 10s
       timeout: 10s
       retries: 5
+
+  postservice:
+    image: lolka123/postservice
+    container_name: servicepost
+    depends_on:
+      - mongopost
+    links:
+      - mongopost
+    ports:
+      - 8081:8080
+  mongopost:
+    image: mongo:latest
+    container_name: mongopost
