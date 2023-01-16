@@ -3,6 +3,7 @@ use crate::{
     repository::{TaskRepository, TaskResult},
 };
 
+#[derive(Debug, Clone)]
 pub struct DeleteTaskUseCase<TaskRepo>
 where
     TaskRepo: TaskRepository,

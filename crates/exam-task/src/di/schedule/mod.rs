@@ -1,13 +1,17 @@
+use std::sync::Arc;
+
 use reqwest::Client;
 use shaku::{Component, HasComponent, Module};
 
 use crate::schedule::Scheduler;
 
+use super::UpdateTaskUseCase;
+
 pub struct SchedulerComponent(());
 
 impl<M> Component<M> for SchedulerComponent
 where
-    M: Module + HasComponent<Client>,
+    M: Module + HasComponent<Client> + HasComponent<UpdateTaskUseCase>,
 {
     type Interface = Scheduler;
 
@@ -17,8 +21,13 @@ where
         context: &mut shaku::ModuleBuildContext<M>,
         _: Self::Parameters,
     ) -> Box<Self::Interface> {
-        let client = (*M::build_component(context)).clone();
-        let scheduler = Scheduler::new(client);
+        let client: Arc<Client> = M::build_component(context);
+        let client = (*client).clone();
+
+        let update: Arc<UpdateTaskUseCase> = M::build_component(context);
+        let update = (*update).clone();
+
+        let scheduler = Scheduler::new(client, update);
         Box::new(scheduler)
     }
 }

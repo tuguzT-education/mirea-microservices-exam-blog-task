@@ -3,6 +3,7 @@ use crate::{
     repository::{TaskRepository, TaskResult},
 };
 
+#[derive(Debug, Clone)]
 pub struct FilterTaskUseCase<TaskRepo>
 where
     TaskRepo: TaskRepository,

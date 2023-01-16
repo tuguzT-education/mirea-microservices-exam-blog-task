@@ -55,9 +55,9 @@ impl TaskDataSource {
             let id = ObjectId::parse_str(id.to_string()).map_err(InternalError::new)?;
             filter.insert("_id", id);
         }
-        if let Some(post_id) = filter_task.post_id {
-            let post_id = post_id.map(String::from);
-            filter.insert("post_id", post_id);
+        if let Some(blog_id) = filter_task.blog_id {
+            let blog_id = blog_id.to_string();
+            filter.insert("blog_id", blog_id);
         }
         if let Some(name) = filter_task.name {
             let regex = Regex {

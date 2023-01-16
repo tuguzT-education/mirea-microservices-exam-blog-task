@@ -1,7 +1,7 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
 
 use chrono::Utc;
-use exam_task_domain::model::{Task, TaskId};
+use exam_task_domain::model::{Task, TaskId, UpdateTask};
 use reqwest::Client;
 use tokio::{
     sync::RwLock,
@@ -9,28 +9,32 @@ use tokio::{
     time,
 };
 
-use crate::model::CreatePost;
+use crate::{di::UpdateTaskUseCase, model::CreatePost};
 
-#[derive(Debug)]
+#[derive(Clone)]
 pub struct Scheduler {
-    handles: RwLock<HashMap<TaskId, JoinHandle<()>>>,
+    handles: Arc<RwLock<HashMap<TaskId, JoinHandle<()>>>>,
     client: Client,
+    update: UpdateTaskUseCase,
 }
 
 impl Scheduler {
-    pub fn new(client: Client) -> Self {
+    pub fn new(client: Client, update: UpdateTaskUseCase) -> Self {
         Self {
-            handles: RwLock::default(),
+            handles: Default::default(),
             client,
+            update,
         }
     }
 
     pub async fn publish_task(&self, task: Task) {
-        let mut handles = self.handles.write().await;
         match task.date_to_publish {
             Some(date_to_publish) => {
                 let id = task.id.clone();
+                let handles = self.handles.clone();
                 let client = self.client.clone();
+                let update_use_case = self.update.clone();
+
                 let duration = (date_to_publish - Utc::now()).to_std().ok();
                 let handle = task::spawn(async move {
                     if let Some(duration) = duration {
@@ -46,15 +50,25 @@ impl Scheduler {
                         .send()
                         .await
                         .unwrap();
+
+                    let mut handles = handles.write().await;
+                    handles.remove(&task.id);
+
+                    let update = UpdateTask::builder()
+                        .is_closed(true)
+                        .date_to_publish(None)
+                        .build();
+                    update_use_case.update_task(task.id, update).await.unwrap();
                 });
+                let mut handles = self.handles.write().await;
                 handles.insert(id, handle);
             }
             None => {
-                let handle = handles.remove(&task.id);
-                if let Some(handle) = handle {
+                let mut handles = self.handles.write().await;
+                if let Some(handle) = handles.remove(&task.id) {
                     handle.abort();
                 }
             }
-        };
+        }
     }
 }

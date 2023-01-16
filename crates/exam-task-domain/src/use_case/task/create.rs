@@ -3,6 +3,7 @@ use crate::{
     repository::{IdRepository, TaskRepository, TaskResult},
 };
 
+#[derive(Debug, Clone)]
 pub struct CreateTaskUseCase<TaskRepo, IdRepo>
 where
     TaskRepo: TaskRepository,
@@ -28,7 +29,7 @@ where
         let id = self.id_repository.create().await?;
         let task = Task {
             id: id.with_owner(),
-            post_id: None,
+            blog_id: create.blog_id,
             name: create.name,
             description: "".to_string(),
             is_closed: false,

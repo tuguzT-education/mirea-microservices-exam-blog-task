@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 pub struct TaskData {
     #[serde(rename = "_id")]
     pub id: ObjectId,
-    pub post_id: Option<ObjectId>,
+    pub blog_id: String,
     pub name: String,
     pub description: String,
     pub is_closed: bool,
@@ -20,7 +20,7 @@ impl From<TaskData> for Task {
     fn from(task: TaskData) -> Self {
         Self {
             id: task.id.to_string().into(),
-            post_id: task.post_id.map(|id| id.to_string().into()),
+            blog_id: task.blog_id.into(),
             name: task.name,
             description: task.description,
             is_closed: task.is_closed,
@@ -35,10 +35,7 @@ impl TryFrom<Task> for TaskData {
     fn try_from(task: Task) -> Result<Self, Self::Error> {
         Ok(Self {
             id: ObjectId::parse_str(task.id.to_string())?,
-            post_id: task
-                .post_id
-                .map(|id| ObjectId::parse_str(id.to_string()))
-                .transpose()?,
+            blog_id: task.blog_id.into(),
             name: task.name,
             description: task.description,
             is_closed: task.is_closed,

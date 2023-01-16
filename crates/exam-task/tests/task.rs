@@ -34,6 +34,7 @@ async fn test_task() {
     let client = Client::new();
 
     let create = CreateTaskData {
+        blog_id: "waltuh".to_string(),
         name: "Hello World".to_string(),
     };
     let response = client

@@ -8,7 +8,7 @@ pub type TaskId = Id<Task>;
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Task {
     pub id: TaskId,
-    pub post_id: Option<ErasedId>,
+    pub blog_id: ErasedId,
     pub name: String,
     pub description: String,
     pub is_closed: bool,
@@ -17,6 +17,7 @@ pub struct Task {
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct CreateTask {
+    pub blog_id: ErasedId,
     pub name: String,
 }
 
@@ -24,7 +25,7 @@ pub struct CreateTask {
 #[builder(field_defaults(default, setter(into, strip_option)))]
 pub struct FilterTask {
     pub id: Option<TaskId>,
-    pub post_id: Option<Option<ErasedId>>,
+    pub blog_id: Option<ErasedId>,
     pub name: Option<String>,
     pub description: Option<String>,
     pub is_closed: Option<bool>,
@@ -34,7 +35,6 @@ pub struct FilterTask {
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Default, TypedBuilder)]
 #[builder(field_defaults(default, setter(into, strip_option)))]
 pub struct UpdateTask {
-    pub post_id: Option<Option<ErasedId>>,
     pub name: Option<String>,
     pub description: Option<String>,
     pub is_closed: Option<bool>,

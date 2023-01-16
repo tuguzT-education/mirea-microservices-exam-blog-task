@@ -3,6 +3,7 @@ use crate::{
     repository::{TaskRepository, TaskResult},
 };
 
+#[derive(Debug, Clone)]
 pub struct UpdateTaskUseCase<TaskRepo>
 where
     TaskRepo: TaskRepository,
@@ -22,7 +23,7 @@ where
         let task = self.task_repository.read(id).await?;
         let task = Task {
             id: task.id,
-            post_id: update.post_id.unwrap_or(task.post_id),
+            blog_id: task.blog_id,
             name: update.name.unwrap_or(task.name),
             description: update.description.unwrap_or(task.description),
             is_closed: update.is_closed.unwrap_or(task.is_closed),
