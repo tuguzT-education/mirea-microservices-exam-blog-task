@@ -18,11 +18,11 @@ async fn test_task() {
     let addr = listener.local_addr().unwrap();
 
     tokio::spawn(async move {
-        let database_url = std::env::var("DATABASE_URL")
+        let database_uri = std::env::var("DATABASE_URI")
             .unwrap_or_else(|_| "mongodb://localhost:27017".to_string());
         let post_service_url = std::env::var("POST_SERVICE_URL")
             .unwrap_or_else(|_| "http://localhost:8082".to_string());
-        let module = app_module(database_url, post_service_url).build();
+        let module = app_module(database_uri, post_service_url).build();
         let module = Arc::new(module);
 
         let app = Router::new().merge(task::all()).layer(Extension(module));
